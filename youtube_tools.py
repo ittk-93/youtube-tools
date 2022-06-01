@@ -75,6 +75,7 @@ class MyYouTubeAPI:
             developerKey=API_KEY
         )
 
+    # 50件以上まとめての処理をパーツ化
     def base(self, response_formula, func, extend=False):
         results = []
         pagetoken = None
@@ -98,11 +99,11 @@ class MyYouTubeAPI:
 
         if results != []: return results
 
-    #playlist idを指定し、50件ごとの処理をする
-    def deal_playlist(self, playlist_id, func, extend=False):
+    # playlist, video, channelなどを扱う土台
+    def deal_playlist(self, playlist_id, func, extend=False, part='snippet'):
         def response_formula(pagetoken):
             return self.youtube.playlistItems().list(
-            part = 'snippet',
+            part = part,
             playlistId = playlist_id,
             maxResults = 50,
             pageToken = pagetoken
@@ -110,40 +111,24 @@ class MyYouTubeAPI:
         results = self.base(response_formula, func, extend)
         return results
 
-    def deal_videos(self, video_ids, func, extend=False):
+    def deal_videos(self, video_ids, func, extend=False, part='snippet'):
         def response_formula(pagetoken):
-            return self.youtube.playlistItems().list(
-                part = 'snippet',
-                playlistId = ','.join(video_ids),
+            return self.youtube.videos().list(
+                part = part,
+                id = ','.join(video_ids),
                 maxResults = 50,
                 pageToken = pagetoken
                 )
         results = self.base(response_formula, func, extend)
         return results
 
-    def deal_channel(self, channel_ids, func, extend=False):
+    def deal_channel(self, channel_ids, func, extend=False, part='statistics'):
         def response_formula(pagetoken):
             return self.youtube.channels().list(
-                part = 'statistics',
+                part = part,
                 id = ','.join(channel_ids),
                 maxResults = 50,
                 pageToken = pagetoken
                 )
         results = self.base(response_formula, func, extend)
         return results
-
-#
-# funcの例
-#
-
-# deal_playlist
-def get_video_ids(response):
-    return [item['snippet']['resourceId']['videoId'] for item in response['items']]
-
-# deal_videos
-def get_titles(response):
-    return [item['snippet']['title'] for item in response['items']]
-
-# deal_channel
-def get_statistics(response):
-    return [item['statistics'] for item in response['items']]
