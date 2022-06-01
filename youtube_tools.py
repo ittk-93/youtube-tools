@@ -103,10 +103,10 @@ class MyYouTubeAPI:
     def deal_playlist(self, playlist_id, func, extend=False, part='snippet'):
         def response_formula(pagetoken):
             return self.youtube.playlistItems().list(
-            part = part,
-            playlistId = playlist_id,
-            maxResults = 50,
-            pageToken = pagetoken
+                part = part,
+                playlistId = playlist_id,
+                maxResults = 50,
+                pageToken = pagetoken
             )
         results = self.base(response_formula, func, extend)
         return results
@@ -118,7 +118,7 @@ class MyYouTubeAPI:
                 id = ','.join(video_ids),
                 maxResults = 50,
                 pageToken = pagetoken
-                )
+            )
         results = self.base(response_formula, func, extend)
         return results
 
@@ -129,6 +129,6 @@ class MyYouTubeAPI:
                 id = ','.join(channel_ids),
                 maxResults = 50,
                 pageToken = pagetoken
-                )
+            )
         results = self.base(response_formula, func, extend)
         return results
